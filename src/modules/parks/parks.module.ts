@@ -8,5 +8,6 @@ import { UserModule } from '../user/user.module';
   imports: [UserModule],
   controllers: [ParksController],
   providers: [ParkService, ParkRepository],
+  exports: [ParkService],
 })
 export class ParksModule {}
