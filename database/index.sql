@@ -1,10 +1,11 @@
 create database my_parking;
 -- 
-create table users(
-    id serial primary key,
-    phone varchar(36) not null,
-    password text not null,
-    fullname varchar(256) default null
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY,
+    phone VARCHAR(36) NOT NULL,
+    password TEXT NOT NULL,
+    fullname VARCHAR(256) DEFAULT NULL,
+    roles TEXT[] DEFAULT '{}'
 );
 create table cars(
     id serial primary key, 

@@ -15,5 +15,5 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
   @IsString()
   @Length(0, 256)
   @IsOptional()
-  fullname: string;
+  fullname?: string;
 }

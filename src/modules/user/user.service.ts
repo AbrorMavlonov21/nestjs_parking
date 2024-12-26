@@ -4,6 +4,8 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { UserRepository } from './user.repository';
 import { ResData } from 'lib/resData';
 import { IUser } from './user.interface';
+import { Bcrypt } from 'lib/bcrypt';
+import { Role } from 'roles/role.enum';
 
 @Injectable()
 export class UserService {
@@ -34,7 +36,10 @@ export class UserService {
     return resData;
   }
   async create(dto: CreateUserDto): Promise<ResData<IUser>> {
-    const data = await this.repository.create(dto);
+    const hashedPassword = await Bcrypt.hash(dto.password);
+    dto.password = hashedPassword;
+    const user: IUser = { ...dto, roles: dto.roles || [Role.Admin] };
+    const data = await this.repository.create(user);
 
     const resData = new ResData<IUser>(
       HttpStatus.OK,

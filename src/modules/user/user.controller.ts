@@ -9,18 +9,25 @@ import {
   HttpException,
   HttpStatus,
   ParseIntPipe,
+  UseGuards,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { IUser } from './user.interface';
 import { ResData } from 'lib/resData';
+import { Role } from 'roles/role.enum';
+import { Roles } from 'roles/roles.decorator';
+import { AuthGuard } from '../auth/auth.guard';
+import { RolesGuard } from 'roles/roles.guard';
 
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post('create-nestjs')
+  @Roles(Role.Admin)
+  @UseGuards(AuthGuard, RolesGuard)
   async create(@Body() dto: CreateUserDto) {
     try {
       const { meta } = await this.userService.getByPhone(dto.phone);
@@ -31,9 +38,7 @@ export class UserController {
           HttpStatus.BAD_REQUEST,
         );
       }
-
       const resData = await this.userService.create(dto);
-
       return resData;
     } catch (error) {
       if (error instanceof HttpException) {
@@ -80,6 +85,8 @@ export class UserController {
     }
   }
 
+  @Roles(Role.Admin)
+  @UseGuards(AuthGuard, RolesGuard)
   @Patch('update-nestjs/:id')
   async update(
     @Param('id', ParseIntPipe) id: number,

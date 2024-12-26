@@ -3,4 +3,5 @@ export interface IUser {
   phone: string;
   password: string;
   fullname?: string;
+  roles?: string[];
 }
