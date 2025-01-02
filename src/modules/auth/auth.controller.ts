@@ -13,12 +13,16 @@ import { Roles } from 'roles/roles.decorator';
 import { Role } from 'roles/role.enum';
 import { AuthGuard } from './auth.guard';
 import { RolesGuard } from 'roles/roles.guard';
-
+import { ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
+@ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('login')
+  @ApiBody({ type: CreateAuthDto })
+  @ApiResponse({ status: 201, description: 'User Logined Successfully' })
+  @ApiResponse({ status: 400, description: 'Failed to LOgin' })
   async login(@Body() createAuthDto: CreateAuthDto) {
     try {
       const resData = await this.authService.login(createAuthDto);
@@ -34,6 +38,9 @@ export class AuthController {
     }
   }
   @Post('registor')
+  @ApiBody({ type: CreateUserDto })
+  @ApiResponse({ status: 201, description: 'User registered Successfully' })
+  @ApiResponse({ status: 400, description: 'Failed to Register' })
   @Roles(Role.Admin, Role.User)
   @UseGuards(AuthGuard, RolesGuard)
   async registor(@Body() createUserDto: CreateUserDto) {
@@ -45,7 +52,7 @@ export class AuthController {
         throw error;
       }
       throw new HttpException(
-        'Failed to Registor',
+        'Failed to Register',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }

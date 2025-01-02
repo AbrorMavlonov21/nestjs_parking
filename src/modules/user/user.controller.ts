@@ -20,14 +20,18 @@ import { Role } from 'roles/role.enum';
 import { Roles } from 'roles/roles.decorator';
 import { AuthGuard } from '../auth/auth.guard';
 import { RolesGuard } from 'roles/roles.guard';
-
+import { ApiBody, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+@ApiTags('User')
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post('create-nestjs')
+  @ApiBody({ type: CreateUserDto })
   @Roles(Role.Admin)
   @UseGuards(AuthGuard, RolesGuard)
+  @ApiResponse({ status: 201, description: 'User created Successfully' })
+  @ApiResponse({ status: 400, description: 'Validation error or user exists' })
   async create(@Body() dto: CreateUserDto) {
     try {
       const { meta } = await this.userService.getByPhone(dto.phone);
@@ -50,7 +54,8 @@ export class UserController {
       );
     }
   }
-
+  @ApiResponse({ status: 200, description: 'Get all Users' })
+  @ApiResponse({ status: 400, description: 'Fail to find all users' })
   @Get('get-all-nestjs')
   async findAll(): Promise<ResData<IUser[]>> {
     try {
@@ -67,7 +72,8 @@ export class UserController {
       );
     }
   }
-
+  @ApiResponse({ status: 200, description: 'User found' })
+  @ApiResponse({ status: 400, description: 'Failed to find user' })
   @Get('get-nestjs/:id')
   async findOne(@Param('id', ParseIntPipe) id: number) {
     try {
@@ -84,7 +90,10 @@ export class UserController {
       );
     }
   }
-
+  @ApiBody({ type: UpdateUserDto })
+  @ApiParam({ name: 'id', description: 'User ID' })
+  @ApiResponse({ status: 200, description: 'User Successfully Updated' })
+  @ApiResponse({ status: 400, description: 'Failed to update user' })
   @Roles(Role.Admin)
   @UseGuards(AuthGuard, RolesGuard)
   @Patch('update-nestjs/:id')
@@ -117,7 +126,8 @@ export class UserController {
       );
     }
   }
-
+  @ApiResponse({ status: 200, description: 'User Successfully deleted' })
+  @ApiResponse({ status: 400, description: 'Failed to delete user' })
   @Delete('delete-nestjs/:id')
   async remove(@Param('id', ParseIntPipe) id: number) {
     try {
